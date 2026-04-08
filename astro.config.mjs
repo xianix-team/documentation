@@ -1,11 +1,30 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { visit } from 'unist-util-visit';
+
+const base = '/documentation';
+
+// Starlight does not auto-prepend the base path to absolute links in markdown
+// content. This plugin rewrites them at build time so content files stay
+// deployment-agnostic (no hardcoded /documentation/ in every link).
+function remarkPrependBase() {
+	return (tree) => {
+		visit(tree, ['link', 'definition'], (node) => {
+			if (node.url && node.url.startsWith('/') && !node.url.startsWith('//')) {
+				node.url = base + node.url;
+			}
+		});
+	};
+}
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://xianix-team.github.io',
-	base: '/documentation',
+	base,
+	markdown: {
+		remarkPlugins: [remarkPrependBase],
+	},
 	integrations: [
 		starlight({
 			title: 'Xianix AI-DLC Docs',
