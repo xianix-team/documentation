@@ -13,19 +13,19 @@ Think of it as a pipeline: **webhook in → rules match → container runs → r
 Webhook (GitHub / Azure DevOps)
         │
         ▼
-┌─────────────────────────────────┐
-│  Xianix Agent (.NET 10)        │
-│                                 │
-│  XianixAgent                    │
-│    └─ OnWebhook                 │
-│         └─ EventOrchestrator    │
-│              └─ RulesEvaluator  │  ← reads rules.json from Xians Knowledge
-│                    │            │
-│         (per match)│            │
-│                    ▼            │
-│         ProcessingWorkflow      │
-│           └─ ContainerActivities│  ← Docker API
-└────────────────────┬────────────┘
+┌────────────────────────────────────┐
+│  Xianix Agent (.NET 10)            │
+│                                    │
+│  XianixAgent                       │
+│    └─ OnWebhook                    │
+│         └─ EventOrchestrator       │
+│              └─ RulesEvaluator     │  ← reads rules.json from Xians Knowledge
+│                    │               │
+│         (per match)│               │
+│                    ▼               │
+│         ProcessingWorkflow         │
+│           └─ ContainerActivities   │  ← Docker API
+└────────────────────┬───────────────┘
                      │
             Docker Engine
                      │

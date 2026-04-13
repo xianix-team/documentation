@@ -30,6 +30,12 @@ export default defineConfig({
 		mermaid({ autoTheme: true }),
 		starlight({
 			title: 'Xianix Documentation',
+			favicon: '/favicon.svg',
+			// logo: {
+			// 	light: './src/assets/logo-light.svg',
+			// 	dark: './src/assets/logo-dark.svg',
+			// 	alt: 'Xianix',
+			// },
 			description: 'AI-powered automation for your development lifecycle.',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/xianix-team' },

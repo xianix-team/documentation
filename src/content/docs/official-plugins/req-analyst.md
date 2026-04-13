@@ -10,7 +10,7 @@ The **Requirement Analyst** plugin grooms backlog items by running five speciali
 ## How It Works
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Fetch backlog item] --> B[Index project docs]
     B --> C[Classify requirement]
     C --> D[Phase 1: 4 analysts in parallel]

@@ -53,14 +53,18 @@ Make sure **Active** is checked, then click **Add webhook**. GitHub will immedia
 
 ## 6. Test the integration
 
-The default rules trigger the agent in two situations:
+The default rules trigger the agent in three situations:
 
-1. A pull request is **assigned to the agent** for review.
-2. **New commits are pushed** to a PR that already has the agent assigned as a reviewer.
+1. A pull request is **opened** with the agent listed as a reviewer.
+2. **New commits are pushed** to a PR that already has the agent as a reviewer.
+3. The agent is **requested as a reviewer** on an existing PR.
+
+See the [PR Reviewer — GitHub rule example](/official-plugins/pr-reviewer/#github) for the exact `match-any` filters and input mappings behind these triggers.
 
 To run your first end-to-end test, open a pull request and request a review from the agent's GitHub account (`xianix-agent` on Agentri). Then open the **Activity Logs** in the Agent Studio — you should see incoming task logs appear within 60 seconds. Within around 5 minutes, the agent will post a review comment directly on the PR.
 
 ## Next steps
 
-- [Configure agent rules](./rules) to customise which events the agent acts on — see the [complete example](./rules#complete-example) in the rules reference for a pull-request review rule set.
+- Review the ready-to-use [PR Reviewer GitHub rule](/official-plugins/pr-reviewer/#github) that ships with the default agent.
+- [Configure agent rules](./rules) to customise which events the agent acts on — see the [complete example](./rules#complete-example) in the rules reference for the full file structure.
 - Return to the [Quick Start](./quickstart) if you need a refresher on any earlier steps.
