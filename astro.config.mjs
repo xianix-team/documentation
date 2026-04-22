@@ -68,6 +68,7 @@ export default defineConfig({
 					{ label: 'Issue Lifecycle', slug: 'official-plugins/issue-lifecycle' },
 					{ label: 'PR Lifecycle', slug: 'official-plugins/pr-lifecycle' },
 					{ label: 'PR Reviewer', slug: 'official-plugins/pr-reviewer' },
+					{ label: 'Performance Optimizer', slug: 'official-plugins/perf-optimizer' },
 					{ label: 'Requirement Analyst', slug: 'official-plugins/req-analyst' },
 				],
 			},
