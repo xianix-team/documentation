@@ -154,9 +154,8 @@ The `AZURE_DEVOPS_TOKEN` requires:
 
 | Scope | Access | Why it's needed |
 |---|---|---|
-| **Code** | Read & Write | Read repository code, push the new `perf/workitem-*` branch |
+| **Code** | Read, Write & Manage | Read repository code, push the new `perf/workitem-*` branch, and open the pull request |
 | **Work Items** | Read & Write | Read the trigger work item body / scope hints and post a link-back comment |
-| **Pull Request Threads** | Read & Write | Open the optimization PR and maintain its discussion thread |
 
 ---
 
@@ -164,7 +163,7 @@ The `AZURE_DEVOPS_TOKEN` requires:
 
 ```bash
 # Point Claude Code at the plugin
-claude --plugin-dir /path/to/xianix-plugins-official/plugins/performance-optimizer-agent
+claude --plugin-dir /path/to/xianix-plugins-official/plugins/perf-optimizer
 
 # Then in the chat
 /perf-optimize
@@ -182,11 +181,10 @@ Use a single execution block per platform in your `rules.json`.
 
 The Performance Optimizer is **label-driven** with a single trigger:
 
-| Platform | Scenario | Webhook event | Filter rule |
-|---|---|---|---|
-| GitHub | Label applied to issue | `issues` | `action==labeled` and `label.name=='ai-dlc/perf/optimize'` |
-| GitHub | Issue opened with label already present | `issues` | `action==opened` and `ai-dlc/perf/optimize` is in `issue.labels` |
-| Azure DevOps | Tag added to work item | `workitem.updated` | `resource.fields['System.Tags']` contains `ai-dlc/perf/optimize` |
+| Platform | Matched webhook event | Filter rule |
+|---|---|---|
+| GitHub | `issues` `action==labeled` | `label.name=='ai-dlc/perf/optimize'` |
+| Azure DevOps | `workitem.updated` | `resource.fields['System.Tags']` contains `ai-dlc/perf/optimize` |
 
 ### GitHub Rule
 
@@ -197,10 +195,6 @@ The Performance Optimizer is **label-driven** with a single trigger:
     {
       "name": "github-issue-label-applied",
       "rule": "action==labeled&&label.name=='ai-dlc/perf/optimize'"
-    },
-    {
-      "name": "github-issue-opened-with-label",
-      "rule": "action==opened&&issue.labels.*.name=='ai-dlc/perf/optimize'"
     }
   ],
   "use-inputs": [
@@ -214,8 +208,11 @@ The Performance Optimizer is **label-driven** with a single trigger:
   ],
   "use-plugins": [
     {
-      "plugin-name": "performance-optimizer-agent@xianix-plugins-official",
-      "marketplace": "xianix-team/plugins-official"
+      "plugin-name": "perf-optimizer@xianix-plugins-official",
+      "marketplace": "xianix-team/plugins-official",
+      "envs": [
+        { "name": "GITHUB-TOKEN", "value": "GITHUB_TOKEN" }
+      ]
     }
   ],
   "execute-prompt": "You are running a whole-codebase performance review for repository {{repository-name}} triggered by issue #{{issue-number}} titled \"{{issue-title}}\".\n\nFetch the default branch ({{default-branch}}), parse any `Scope:` / `Target:` hints from the issue body below, and run /perf-optimize across the selected scope (default: entire codebase).\n\nApply only low-risk optimizations on a new branch named `perf/issue-{{issue-number}}-<slug>` and open a pull request against {{default-branch}}. The PR body MUST embed the full performance report and include `Closes #{{issue-number}}`. After opening the PR, post a comment on issue #{{issue-number}} linking to it.\n\nIssue body:\n{{issue-body}}"
@@ -224,7 +221,7 @@ The Performance Optimizer is **label-driven** with a single trigger:
 
 ### Azure DevOps Rule
 
-Because work items are project-scoped (not repo-scoped), the target repository URL must be configured on the rule itself rather than read from the event payload.
+Because work items are project-scoped (not repo-scoped), the target repository URL must be configured on the rule itself rather than read from the event payload. Deploy one rule per repository you want to cover.
 
 ```json
 {
@@ -233,10 +230,6 @@ Because work items are project-scoped (not repo-scoped), the target repository U
     {
       "name": "azuredevops-workitem-tagged",
       "rule": "eventType==workitem.updated&&resource.fields.System.Tags*='ai-dlc/perf/optimize'"
-    },
-    {
-      "name": "azuredevops-workitem-created-with-tag",
-      "rule": "eventType==workitem.created&&resource.fields.System.Tags*='ai-dlc/perf/optimize'"
     }
   ],
   "use-inputs": [
@@ -250,8 +243,11 @@ Because work items are project-scoped (not repo-scoped), the target repository U
   ],
   "use-plugins": [
     {
-      "plugin-name": "performance-optimizer-agent@xianix-plugins-official",
-      "marketplace": "xianix-team/plugins-official"
+      "plugin-name": "perf-optimizer@xianix-plugins-official",
+      "marketplace": "xianix-team/plugins-official",
+      "envs": [
+        { "name": "AZURE-DEVOPS-TOKEN", "value": "AZURE_DEVOPS_TOKEN" }
+      ]
     }
   ],
   "execute-prompt": "You are running a whole-codebase performance review for repository {{repository-name}} triggered by work item #{{workitem-id}} titled \"{{workitem-title}}\".\n\nFetch the default branch ({{default-branch}}), parse any `Scope:` / `Target:` hints from the work item description below, and run /perf-optimize across the selected scope (default: entire codebase).\n\nApply only low-risk optimizations on a new branch named `perf/workitem-{{workitem-id}}-<slug>` and open a pull request against {{default-branch}}. The PR body MUST embed the full performance report and reference work item #{{workitem-id}}. After opening the PR, post a comment on the work item linking to it.\n\nWork item description:\n{{workitem-body}}"
@@ -265,3 +261,66 @@ Replace the `<org>`, `<project>`, and `<repo>` placeholders in the Azure DevOps 
 :::note
 These blocks belong inside the `executions` array of a rule set. See [Rules Configuration](/agent-configuration/rules/) for full syntax.
 :::
+
+:::caution[Credentials]
+The `envs` block is **required**, not cosmetic. The plugin's `validate-prerequisites.sh` hook refuses to run `git push` without a platform token in the environment:
+
+- `GITHUB-TOKEN` — maps a secret holding a GitHub PAT (`repo` + `workflow` scopes) or an equivalent GitHub App token into the sandbox as `GITHUB_TOKEN`. Consumed by `gh` CLI and by `git push` over HTTPS to `github.com`.
+- `AZURE-DEVOPS-TOKEN` — maps a secret holding an Azure DevOps PAT (`Work Items: Read & Write`, `Code: Read, Write & Manage`) into the sandbox as `AZURE_DEVOPS_TOKEN`. Consumed by `curl` REST calls and by `git push` to `dev.azure.com` / `visualstudio.com`.
+
+If you omit the `envs` mapping, runs succeed through analysis, planning, and committing, then **block at the push step** with a hook error.
+:::
+
+---
+
+## Safety Invariants
+
+The Performance Optimizer guarantees — enforced by both the orchestrator prompt and the `hooks/validate-prerequisites.sh` PreToolUse hook — that:
+
+- **The default branch is never pushed to.** All changes go on a new `perf/issue-*` or `perf/workitem-*` branch.
+- **Only Quick-win findings are ever applied automatically.** Architectural rewrites are surfaced as _Deeper follow-up_ in the embedded report, never auto-applied.
+- **Every optimization commit is scoped and documented.** One commit per finding, prefixed `perf:`, with file + line reference.
+- **The PR body always embeds the full performance report** so reviewers see analysis and code side by side.
+
+---
+
+## What's in this plugin
+
+```
+perf-optimizer/
+├── .claude-plugin/
+│   ├── plugin.json          # Manifest
+│   ├── settings.json        # Default agent
+│   └── .lsp.json            # Language servers (TypeScript, C#, Python, Go)
+├── commands/
+│   └── perf-optimize.md     # Slash command entry point
+├── agents/
+│   ├── orchestrator.md      # Whole-codebase controller
+│   ├── latency-analyzer.md
+│   ├── cpu-analyzer.md
+│   ├── memory-analyzer.md
+│   ├── io-query-analyzer.md
+│   └── perf-pr-author.md    # Quick-win applier + PR opener
+├── skills/
+│   ├── analyze-performance/SKILL.md
+│   └── create-perf-pr/SKILL.md
+├── providers/
+│   ├── github.md            # Issues + PRs via gh CLI
+│   └── azure-devops.md      # Work items + PRs via REST
+├── styles/
+│   └── report-template.md
+├── hooks/
+│   ├── hooks.json
+│   ├── validate-prerequisites.sh
+│   └── notify-push.sh
+├── docs/
+│   ├── platform-setup.md
+│   └── rules-examples.md
+└── README.md
+```
+
+---
+
+## License
+
+MIT — same as the rest of this marketplace.
