@@ -46,8 +46,8 @@ export default defineConfig({
 				{
 					label: 'Introduction',
 					items: [
-				{ label: 'Overview', slug: 'introduction/overview' },
-					{ label: 'Architecture', slug: 'introduction/architecture' },
+						{ label: 'Overview', slug: 'introduction/overview' },
+						{ label: 'Architecture', slug: 'introduction/architecture' },
 					],
 				},
 				{
@@ -77,27 +77,31 @@ export default defineConfig({
 						{ label: 'PR Lifecycle', slug: 'miscellaneous/pr-lifecycle' },
 					],
 				},
-			{
-				label: 'Official Plugins',
-				items: [
+				{
+					label: 'Official Plugins',
+					items: [
 
-					{
-						label: 'PR Reviewer',
-						link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/pr-reviewer',
-						attrs: { target: '_blank', rel: 'noopener noreferrer' },
-					},
-					{ label: 'Performance Optimizer', slug: 'official-plugins/perf-optimizer' },
-					{ label: 'PR Comment Resolver', slug: 'official-plugins/pr-comment-resolver' },
-					{ label: 'Document Updater', slug: 'official-plugins/doc-writer' },
-					{ label: 'Requirement Analyst', slug: 'official-plugins/req-analyst' },
-					// { label: 'Incident Response', slug: 'official-plugins/incident-response' },
-					{ label: 'Test Strategist', slug: 'official-plugins/test-strategist' },
-					{ label: 'Web App Tester', slug: 'official-plugins/web-app-tester' },
-					{ label: 'Chatbot Tester', slug: 'official-plugins/chatbot-tester' },
-					{ label: 'Code Archaeology Agent', slug: 'official-plugins/code-archaeology-agent' },
-					{ label: 'UX Mob Process', slug: 'official-plugins/ux-mob-process' },
-				],
-			},
+						{
+							label: 'PR Reviewer',
+							link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/pr-reviewer',
+							attrs: { target: '_blank', rel: 'noopener noreferrer' },
+						},
+						{
+							label: 'Performance Optimizer',
+							link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/perf-optimizer',
+							attrs: { target: '_blank', rel: 'noopener noreferrer' },
+						},
+						{ label: 'PR Comment Resolver', slug: 'official-plugins/pr-comment-resolver' },
+						{ label: 'Document Updater', slug: 'official-plugins/doc-writer' },
+						{ label: 'Requirement Analyst', slug: 'official-plugins/req-analyst' },
+						// { label: 'Incident Response', slug: 'official-plugins/incident-response' },
+						{ label: 'Test Strategist', slug: 'official-plugins/test-strategist' },
+						{ label: 'Web App Tester', slug: 'official-plugins/web-app-tester' },
+						{ label: 'Chatbot Tester', slug: 'official-plugins/chatbot-tester' },
+						{ label: 'Code Archaeology Agent', slug: 'official-plugins/code-archaeology-agent' },
+						{ label: 'UX Mob Process', slug: 'official-plugins/ux-mob-process' },
+					],
+				},
 				{
 					label: 'Plugin Development',
 					items: [
@@ -105,18 +109,18 @@ export default defineConfig({
 						{ label: 'Marketplace', slug: 'plugin-development/marketplace' },
 					],
 				},
-			{
-				label: 'Agent Development',
-				items: [
-				{ label: 'Overview', slug: 'agent-development/overview' },
-				{ label: 'Getting Started', slug: 'agent-development/getting-started' },
-				{ label: 'How It Works', slug: 'agent-development/how-it-works' },
-				{ label: 'The Executor', slug: 'agent-development/executor' },
-				{ label: 'Extending the Agent', slug: 'agent-development/extending' },
-				{ label: 'Deployment', slug: 'agent-development/deployment' },
-				{ label: 'Contributing', slug: 'agent-development/contributing' },
-				],
-			},
+				{
+					label: 'Agent Development',
+					items: [
+						{ label: 'Overview', slug: 'agent-development/overview' },
+						{ label: 'Getting Started', slug: 'agent-development/getting-started' },
+						{ label: 'How It Works', slug: 'agent-development/how-it-works' },
+						{ label: 'The Executor', slug: 'agent-development/executor' },
+						{ label: 'Extending the Agent', slug: 'agent-development/extending' },
+						{ label: 'Deployment', slug: 'agent-development/deployment' },
+						{ label: 'Contributing', slug: 'agent-development/contributing' },
+					],
+				},
 			],
 		}),
 	],
