@@ -91,7 +91,11 @@ export default defineConfig({
 							link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/perf-optimizer',
 							attrs: { target: '_blank', rel: 'noopener noreferrer' },
 						},
-						{ label: 'PR Comment Resolver', slug: 'official-plugins/pr-comment-resolver' },
+						{ 
+							label: 'PR Comment Resolver',
+							link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/pr-comment-resolver',
+							attrs: { target: '_blank', rel: 'noopener noreferrer' },
+						},
 						{ label: 'Document Updater', slug: 'official-plugins/doc-writer' },
 						{ label: 'Requirement Analyst', slug: 'official-plugins/req-analyst' },
 						// { label: 'Incident Response', slug: 'official-plugins/incident-response' },
