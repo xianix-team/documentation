@@ -54,6 +54,7 @@ export default defineConfig({
 					label: 'Agent Configuration',
 					items: [
 						{ label: 'Rules Configuration', slug: 'agent-configuration/rules' },
+						{ label: 'Rules Optimizer (Beta)', slug: 'agent-configuration/rules-optimizer' },
 						{
 							label: 'Trigger Types',
 							items: [

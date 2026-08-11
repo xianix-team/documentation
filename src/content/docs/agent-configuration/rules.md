@@ -3,6 +3,8 @@ title: Rules Configuration
 description: How rules.json controls what the agent does — the shared structure behind webhook, schedule, and chat rule sets.
 ---
 
+To build a webhook rules set in chat instead of editing JSON, see **[Rules Optimizer (beta)](/agent-configuration/rules-optimizer/)**.
+
 `rules.json` is the single configuration surface that controls **what the agent does**. Each entry in the JSON array is a self-contained **rule set** triggered by one of three things:
 
 - an inbound **webhook** (`webhook`) — see [Webhook Rule Sets](/agent-configuration/rules/webhooks/),
