@@ -1,9 +1,9 @@
 ---
 title: Onboard a Repository
-description: Simple guide to onboard a GitHub or Azure DevOps repo with the onboarding agent (Rules Optimizer) and the inbuilt Xians webhook.
+description: Beta Release — onboard a GitHub or Azure DevOps repo with the onboarding agent (Setup / Rules Optimizer) and the inbuilt Xians webhook.
 ---
 
-Simple guide for adding a GitHub or Azure DevOps repo through the **onboarding agent** (Rules Optimizer) in Agent Studio.
+**Beta Release.** Simple guide for adding a GitHub or Azure DevOps repo through the onboarding agent in Agent Studio. In the UI that agent may appear as **Setup** or **Rules Optimizer**.
 
 This walkthrough installs plugins, stores the repo URL, checks secrets, and creates the **inbuilt** Xians webhook under Agent Settings → Connections. You do **not** create a webhook on GitHub or Azure DevOps.
 
@@ -34,21 +34,21 @@ Do **not** paste token values into chat. Add them in Studio secrets, then tell t
 1. Sign in to Agent Studio.
 2. Open the Xianix agent and go to **Conversations**.
 3. In **General Discussions**, say you want to set up the repo — for example `I want to setup my repo`.
-4. The agent replies that setup happens in a separate chat. Click **Open Rules Optimizer**.
+4. The agent replies that setup happens in a separate chat. Click **Open Setup** or **Open Rules Optimizer** (the label may be either).
 
-![Ask to set up the repo, then click Open Rules Optimizer](./img/onboard-open-rules-optimizer.png)
+![Ask to set up the repo, then click Open Setup or Open Rules Optimizer](./img/onboard-open-rules-optimizer.png)
 
 ---
 
 ## 2. Continue in the setup chat
 
-Clicking the link opens a **setup** conversation. That chat **is** the onboarding agent.
+Clicking the link opens a **Setup** (or **Rules Optimizer**) conversation. That chat **is** the onboarding agent (Beta Release).
 
 Use a starter such as **Set up webhooks and rules for a repository** or **Onboard a GitHub or Azure DevOps repository**, or type the clone URL.
 
-Stay in this **setup** conversation for the rest of the steps.
+Stay in this setup conversation for the rest of the steps.
 
-![The setup conversation after Open Rules Optimizer](./img/onboard-setup-chat.png)
+![The setup conversation after opening Setup / Rules Optimizer](./img/onboard-setup-chat.png)
 
 ---
 
@@ -127,7 +127,7 @@ The repo is onboarded when:
 - Secrets for that platform are present
 - **Connections** shows the inbuilt Default webhook
 
-You can now run a plugin from the main (non-setup) chat.
+You can now run a plugin from the main (non-Setup) chat.
 
 ---
 
@@ -137,7 +137,7 @@ You can now run a plugin from the main (non-setup) chat.
 | --- | --- |
 | Agent asks for the URL again | Paste the full HTTPS clone URL. Do not type only the repo name. |
 | Plugin “already configured” | It was already installed. Continue to webhook / secrets if those are still missing. |
-| Install did not update `rules.json` | Stay in the **activation** setup chat and retry. Do not treat a tool error as success. |
+| Install did not update `rules.json` | Stay in the **Setup** / **Rules Optimizer** chat and retry. Do not treat a tool error as success. |
 | Missing `GITHUB-TOKEN` / `AZURE-DEVOPS-TOKEN` | Add the key in Secrets, then say `done`. |
 | GitHub “repository not found” later | URL is wrong, **or** the token cannot see a private repo. Hosts look the same for both cases. |
 | Webhook URL looks like an old tunnel host | Ask the agent to create the webhook again and use only the latest URL. |
