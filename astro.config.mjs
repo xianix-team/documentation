@@ -54,6 +54,8 @@ export default defineConfig({
 					label: 'Agent Configuration',
 					items: [
 						{ label: 'Rules Configuration', slug: 'agent-configuration/rules' },
+						{ label: 'Onboard a Repository', slug: 'agent-configuration/onboard-a-repository' },
+						{ label: 'AI Hub Configuration', slug: 'agent-configuration/ai-hub-configuration' },
 						{
 							label: 'Trigger Types',
 							items: [

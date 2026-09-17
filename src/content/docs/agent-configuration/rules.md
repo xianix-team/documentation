@@ -3,6 +3,10 @@ title: Rules Configuration
 description: How rules.json controls what the agent does — the shared structure behind webhook, schedule, and chat rule sets.
 ---
 
+To onboard a repository through chat (plugins, secrets, and the inbuilt Default webhook), see **[Onboard a Repository](/agent-configuration/onboard-a-repository/)**.
+
+To send execution metrics to 99x AI Hub via `raise-events`, see **[AI Hub Configuration](/agent-configuration/ai-hub-configuration/)**.
+
 `rules.json` is the single configuration surface that controls **what the agent does**. Each entry in the JSON array is a self-contained **rule set** triggered by one of three things:
 
 - an inbound **webhook** (`webhook`) — see [Webhook Rule Sets](/agent-configuration/rules/webhooks/),
