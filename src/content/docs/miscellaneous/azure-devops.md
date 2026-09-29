@@ -60,12 +60,12 @@ The default rules trigger the agent in three situations:
 2. A **new top-level PR comment** containing the text `ai-dlc/pr/pr-review` is posted — triggers a comprehensive review.
 3. **New commits are pushed** to a PR that already has the agent as a reviewer — triggers a focused incremental review (`--push-update` mode) of only the new commits.
 
-See the [PR Reviewer — Azure DevOps rule example](/official-plugins/pr-reviewer/#azure-devops) for the exact `match-any` filters and input mappings behind these triggers.
+See the [PR Reviewer — Azure DevOps rule example](https://github.com/xianix-team/plugins-official/blob/main/plugins/pr-reviewer/docs/triggers-azure-devops.md) for the exact `match-any` filters and input mappings behind these triggers.
 
 To run your first end-to-end test, open a pull request and add the agent's user account (`xianix-agent` on Agentri) as a reviewer. Then open the **Activity Logs** in the Agent Studio — you should see incoming task logs appear within 60 seconds. Within around 5 minutes, the agent will post a review comment directly on the PR.
 
 ## Next steps
 
-- Review the ready-to-use [PR Reviewer Azure DevOps rule](/official-plugins/pr-reviewer/#azure-devops) that ships with the default agent.
+- Review the ready-to-use [PR Reviewer Azure DevOps rule](https://github.com/xianix-team/plugins-official/blob/main/plugins/pr-reviewer/docs/triggers-azure-devops.md) that ships with the default agent.
 - [Configure agent rules](/agent-configuration/rules) to customise which events the agent acts on — see the [Azure DevOps examples](/agent-configuration/rules#azure-devops-example-work-item-field-with-a-dotted-name) for payload matching patterns specific to Azure DevOps.
 - Return to the [Quick Start](./quickstart) if you need a refresher on any earlier steps.

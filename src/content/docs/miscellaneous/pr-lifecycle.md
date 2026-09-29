@@ -126,7 +126,7 @@ Each agent below uses the same shape: **Triggers** (how it's invoked on each pla
 
 ### `pr-reviewer`
 
-A read-only, multi-dimensional review of the PR diff. Full plugin reference: [PR Reviewer](/official-plugins/pr-reviewer/).
+A read-only, multi-dimensional review of the PR diff. Full plugin reference: [PR Reviewer](https://github.com/xianix-team/plugins-official/tree/main/plugins/pr-reviewer).
 
 This is the best default starting point for AI-DLC on a mature team because it adds signal without changing the branch.
 
@@ -140,7 +140,7 @@ This is the best default starting point for AI-DLC on a mature team because it a
 | **Azure DevOps** | Reviewer assignment *(default rule)* | Add `xianix-agent@99x.io` as a reviewer | `git.pullrequest.updated` with `xianix-agent@99x.io` in `resource.reviewers` and `message.text` contains `changed the reviewer list` |
 | **Azure DevOps** | New commits (push update) | Push new commits to a PR being reviewed | `git.pullrequest.updated` where `message.text` contains `updated the source branch` and `xianix-agent@99x.io` is already in `resource.reviewers` — triggers a focused push-update review |
 
-See [PR Reviewer — Rule Examples](/official-plugins/pr-reviewer/#rule-examples) for the complete `match-any` blocks.
+See [PR Reviewer — Rule Examples](https://github.com/xianix-team/plugins-official/blob/main/plugins/pr-reviewer/README.md#automated-triggering-xianix-agent) for the complete `match-any` blocks.
 
 #### Activities
 
@@ -348,7 +348,7 @@ sequenceDiagram
 
 For the platform-specific rule blocks (the exact `match-any` filters and `use-inputs` mappings) see:
 
-- [PR Reviewer — Rule Examples](/official-plugins/pr-reviewer/#rule-examples) for `pr-reviewer` on both platforms.
+- [PR Reviewer — Rule Examples](https://github.com/xianix-team/plugins-official/blob/main/plugins/pr-reviewer/README.md#automated-triggering-xianix-agent) for `pr-reviewer` on both platforms.
 - [Rules Configuration](/agent-configuration/rules/) for the full filter syntax used by every agent in the team.
 
 ---
@@ -358,6 +358,6 @@ For the platform-specific rule blocks (the exact `match-any` filters and `use-in
 - [Adoption Guide](/miscellaneous/adoption-guide/) — the recommended low-friction rollout path for human-led teams.
 - [Marketplace Overview](/miscellaneous/overview/) — the shared label vocabulary, contracts, scanners, and install path.
 - [Issue Lifecycle](/miscellaneous/issue-lifecycle/) — the deep dive on what happens before `implementer` opens a draft PR.
-- [PR Reviewer](/official-plugins/pr-reviewer/) — the deep dive on `pr-reviewer`.
+- [PR Reviewer](https://github.com/xianix-team/plugins-official/tree/main/plugins/pr-reviewer) — the deep dive on `pr-reviewer`.
 - [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) — the deep dive on `req-analyst` (whose AC powers `ac-verifier`).
 - [GitHub Setup](/miscellaneous/github/) and [Azure DevOps Setup](/miscellaneous/azure-devops/) — getting the webhooks wired up.
