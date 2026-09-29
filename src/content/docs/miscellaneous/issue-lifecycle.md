@@ -125,7 +125,7 @@ Each agent below uses the same shape: **Triggers** (how it's invoked on each pla
 
 ### `req-analyst`
 
-The first responder to a fresh idea. Reads the raw issue, asks "what does the user actually need and why," and produces a structured elaboration. Full plugin reference: [Requirement Analyst](/official-plugins/req-analyst/).
+The first responder to a fresh idea. Reads the raw issue, asks "what does the user actually need and why," and produces a structured elaboration. Full plugin reference: [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst).
 
 Best used when the input is vague, incomplete, or spread across comments and linked artifacts.
 
@@ -385,7 +385,7 @@ sequenceDiagram
 
 For the platform-specific rule blocks (the exact `match-any` filters and `use-inputs` mappings) see:
 
-- [Requirement Analyst — Rule Examples](/official-plugins/req-analyst/) for `req-analyst` on both platforms.
+- [Requirement Analyst — Rule Examples](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) for `req-analyst` on both platforms.
 - [Rules Configuration](/agent-configuration/rules/) for the full filter syntax used by every agent in the team.
 
 ---
@@ -395,5 +395,5 @@ For the platform-specific rule blocks (the exact `match-any` filters and `use-in
 - [Adoption Guide](/miscellaneous/adoption-guide/) — the recommended low-friction rollout path for human-led teams.
 - [Marketplace Overview](/miscellaneous/overview/) — the shared label vocabulary, contracts, scanners, and install path.
 - [PR Lifecycle](/miscellaneous/pr-lifecycle/) — the deep dive on what happens after `implementer` opens a draft PR.
-- [Requirement Analyst](/official-plugins/req-analyst/) — the deep dive on `req-analyst`.
+- [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) — the deep dive on `req-analyst`.
 - [GitHub Setup](/miscellaneous/github/) and [Azure DevOps Setup](/miscellaneous/azure-devops/) — getting the webhooks wired up.

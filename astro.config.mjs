@@ -99,7 +99,11 @@ export default defineConfig({
 							attrs: { target: '_blank', rel: 'noopener noreferrer' },
 						},
 						{ label: 'Document Updater', slug: 'official-plugins/doc-writer' },
-						{ label: 'Requirement Analyst', slug: 'official-plugins/req-analyst' },
+						{
+						label: 'Requirement Analyst',
+						link: 'https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst',
+						attrs: { target: '_blank', rel: 'noopener noreferrer' },
+					},
 						// { label: 'Incident Response', slug: 'official-plugins/incident-response' },
 						{ label: 'Test Strategist', slug: 'official-plugins/test-strategist' },
 						{ label: 'Web App Tester', slug: 'official-plugins/web-app-tester' },

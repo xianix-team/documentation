@@ -48,7 +48,7 @@ Each plugin can be installed and triggered on its own. The reference pages docum
 | Plugin | Description |
 | --- | --- |
 | [PR Reviewer](/official-plugins/pr-reviewer) | Parallel code-quality, security, test, and performance review — posted straight to your PR. Powers the `pr-reviewer` agent in AI-DLC. |
-| [Requirement Analyst](/official-plugins/req-analyst) | Multi-phase requirement grooming: intent, domain, journeys, personas, and gap analysis. Powers the `req-analyst` agent in AI-DLC. |
+| [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) | Multi-phase requirement grooming: intent, domain, journeys, personas, and gap analysis. Powers the `req-analyst` agent in AI-DLC. |
 | [Incident Response](/official-plugins/incident-response) | AI first-responder for live incidents: deployment correlation, log and metrics analysis, mitigation suggestions, and post-mortem drafting. |
 
 ---

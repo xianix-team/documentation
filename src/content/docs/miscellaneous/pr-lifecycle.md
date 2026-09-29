@@ -162,7 +162,7 @@ See [PR Reviewer — Rule Examples](/official-plugins/pr-reviewer/#rule-examples
 
 ### `ac-verifier`
 
-Closes the loop between the [Requirement Analyst](/official-plugins/req-analyst/) phase and the PR. Cross-checks the PR diff against the Gherkin acceptance criteria written by `ac-writer` on the linked issue / work item.
+Closes the loop between the [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) phase and the PR. Cross-checks the PR diff against the Gherkin acceptance criteria written by `ac-writer` on the linked issue / work item.
 
 This is most useful when the team has already invested in explicit acceptance criteria. It should be treated as a support tool for static verification, not as a replacement for human signoff or runtime validation.
 
@@ -359,5 +359,5 @@ For the platform-specific rule blocks (the exact `match-any` filters and `use-in
 - [Marketplace Overview](/miscellaneous/overview/) — the shared label vocabulary, contracts, scanners, and install path.
 - [Issue Lifecycle](/miscellaneous/issue-lifecycle/) — the deep dive on what happens before `implementer` opens a draft PR.
 - [PR Reviewer](/official-plugins/pr-reviewer/) — the deep dive on `pr-reviewer`.
-- [Requirement Analyst](/official-plugins/req-analyst/) — the deep dive on `req-analyst` (whose AC powers `ac-verifier`).
+- [Requirement Analyst](https://github.com/xianix-team/plugins-official/tree/main/plugins/req-analyst) — the deep dive on `req-analyst` (whose AC powers `ac-verifier`).
 - [GitHub Setup](/miscellaneous/github/) and [Azure DevOps Setup](/miscellaneous/azure-devops/) — getting the webhooks wired up.
