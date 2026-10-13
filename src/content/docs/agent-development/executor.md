@@ -1,9 +1,11 @@
 ---
 title: The Executor
-description: How the xianix-executor Docker image clones repos, installs plugins, and runs Claude Code prompts.
+description: How Xianix executor Docker images clone repos, install plugins, and run Claude Code or OpenCode prompts.
 ---
 
 The `xianix-executor` is a short-lived Docker container that does the actual work. Each container clones (or fetches) a Git repository, installs Claude Code plugins, runs a prompt against the codebase, and returns a structured JSON result via stdout.
+
+Xianix also ships an **OpenCode harness** image (`99xio/xianix-executor-opencode`). Both share prepare / worktree isolation; select the harness with [`executor-image`](/agent-configuration/rules/#executor-image--harness-selection). Full architecture, image layout, and dual-harness workflow: **[Multi-Harness Development](/multi-harness-development/overview/)**.
 
 ## What's Inside
 

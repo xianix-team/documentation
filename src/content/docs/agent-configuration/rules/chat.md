@@ -73,7 +73,8 @@ The [Cost & Execution Controls](/agent-configuration/rules/#cost--execution-cont
 
 | Field | Description |
 |-------|-------------|
-| `model` | Model override for chat dispatches. Empty means the executor's default. |
+| `model` | Model override for chat dispatches. Empty means the executor's default. Claude harness uses Anthropic ids; OpenCode harness uses `provider/model`. |
+| `executor-image` | Optional harness image for chat dispatches (e.g. `99xio/xianix-executor-opencode:latest`). See [Rules Configuration → executor-image](/agent-configuration/rules/#executor-image--harness-selection). |
 | `max-turns` | Turn cap for chat dispatches. |
 | `allowed-tools` | Allow-list of tools for chat dispatches. |
 | `disallowed-tools` | Deny-list of tools for chat dispatches. |

@@ -382,14 +382,14 @@ If a path does not resolve (missing property), the input is set to `null`. If th
 4. `use-inputs` are resolved from the payload, and the resolved structural values are auto-injected back into the inputs dict under the canonical keys `platform` / `repository-url`. The short `repository-name` (e.g. `owner/repo`) is **derived** from `repository-url` (platform-aware: handles GitHub, Azure DevOps `_git` URLs, etc.) and injected alongside them so prompts and plugins see a single combined view.
 5. `execute-prompt` is interpolated with those inputs (including the auto-injected structural values).
 6. The agent resolves `with-envs` (literals, `host.*`, `secrets.*`) and injects them into the executor container alongside the runtime values it manages itself (`ANTHROPIC_API_KEY`, etc.).
-7. **Cost & execution controls are applied** — `model`, `max-turns`, `allowed-tools`, `disallowed-tools`, `max-budget-usd`, and `resume-sessions` are forwarded to the executor as typed env vars (`XIANIX-MODEL`, `XIANIX-MAX-TURNS`, etc.). Any field that is not set is simply not seeded, so the executor falls back to its own defaults — there is no behavioral change for existing rules that don't declare these fields.
-8. The executor installs `use-plugins`, injects a cached `CLAUDE.md` and symbol map into the worktree so the agent doesn't re-explore the codebase from scratch (skipped when the repo ships its own `CLAUDE.md`; optionally enriched with an LLM-authored architecture narrative when `EXECUTOR-CONTEXT-LLM` / `XIANIX-CONTEXT-LLM` is enabled), optionally resumes a prior session (when `resume-sessions: true`), and runs the final prompt with the configured model, turn cap, tool restrictions, and spend cap applied.
+7. **Cost & execution controls are applied** — `model`, `max-turns`, `allowed-tools`, `disallowed-tools`, `max-budget-usd`, `resume-sessions`, and optional `executor-image` are forwarded to the container (`XIANIX-MODEL`, `XIANIX-MAX-TURNS`, …). When `executor-image` is set (e.g. `99xio/xianix-executor-opencode:latest`), that harness image is used instead of the host `EXECUTOR-IMAGE`. See [Rules Configuration → executor-image](/agent-configuration/rules/#executor-image--harness-selection).
+8. The executor installs `use-plugins`, injects a cached `CLAUDE.md` and symbol map into the worktree so the agent doesn't re-explore the codebase from scratch (skipped when the repo ships its own `CLAUDE.md`; optionally enriched with an LLM-authored architecture narrative when `EXECUTOR-CONTEXT-LLM` / `XIANIX-CONTEXT-LLM` is enabled), optionally resumes a prior session (when `resume-sessions: true`), and runs the final prompt — via Claude Code or OpenCode depending on the harness — with the configured model, turn cap, tool restrictions, and spend cap applied.
 
 ---
 
 ## Complete Example
 
-A webhook rule set with two executions — a Sonnet-powered PR review with a spend cap and session reuse, plus a Haiku-powered issue analysis with a turn cap:
+A webhook rule set with three executions — a Sonnet Claude Code PR review, an OpenCode harness PR review (`executor-image` + `provider/model`), and a Haiku issue analysis:
 
 ```json
 [
@@ -424,6 +424,31 @@ A webhook rule set with two executions — a Sonnet-powered PR review with a spe
         "resume-sessions":  true,
         "conversation-key": "number",
         "execute-prompt": "You are reviewing pull request #{{pr-number}} titled \"{{pr-title}}\" in the repository {{repository-name}}.\n\nRun /pr-review {{pr-number}} to perform the automated review. The `gh` CLI is authenticated and available if you need it directly."
+      },
+      {
+        "name": "github-pull-request-review-opencode",
+        "platform": "github",
+        "repository": "repository.clone_url",
+        "match-any": [
+          { "name": "pr-opencode-label", "rule": "action==labeled&&label.name=='ai-dlc/pr/pr-review-opencode'&&pull_request.state=='open'" }
+        ],
+        "use-inputs": [
+          { "name": "pr-number", "value": "pull_request.number", "mandatory": true }
+        ],
+        "use-plugins": [
+          {
+            "plugin-name": "pr-reviewer@xianix-plugins-official",
+            "marketplace": "xianix-team/plugins-official"
+          }
+        ],
+        "with-envs": [
+          { "name": "OPENAI-API-KEY", "value": "secrets.OPENAI-API-KEY", "mandatory": true }
+        ],
+        "executor-image": "99xio/xianix-executor-opencode:latest",
+        "model": "openai/gpt-6.1-sol",
+        "max-budget-usd": 3,
+        "conversation-key": "pull_request.number",
+        "execute-prompt": "You are reviewing pull request #{{pr-number}} in the repository {{repository-name}}. Run /pr-review {{pr-number}} to perform the automated review."
       },
       {
         "name": "github-issue-requirement-analysis",

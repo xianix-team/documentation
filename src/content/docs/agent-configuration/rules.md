@@ -13,11 +13,16 @@ To send execution metrics to 99x AI Hub via `raise-events`, see **[AI Hub Config
 - a recurring **cron schedule** (`schedule` + `cron`) — see [Schedule Rule Sets](/agent-configuration/rules/schedules/),
 - an interactive **chat** dispatch (`chat`) — see [Chat Rule Sets](/agent-configuration/rules/chat/).
 
-Every rule set maps to one or more **execution blocks** (chat rule sets are the exception — they have no `executions`). Each block independently declares payload filters, input extraction, plugin installation, and a Claude Code prompt template — so a single inbound event (or a recurring tick) can fan out into multiple specialised workflows without any custom code.
+Every rule set maps to one or more **execution blocks** (chat rule sets are the exception — they have no `executions`). Each block independently declares payload filters, input extraction, plugin installation, harness image, and a prompt template — so a single inbound event (or a recurring tick) can fan out into multiple specialised workflows without any custom code.
 
 ```
 rules.json  →  WebhookRulesEvaluator  →  EventOrchestrator  →  ProcessingWorkflow  →  Executor Container
+                                                                              │
+                                                    Claude Code image  OR  OpenCode harness image
+                                                    (default EXECUTOR-IMAGE)   (executor-image override)
 ```
+
+The control plane can run either the stock **Claude Code** executor (`99xio/xianix-executor`) or the **OpenCode harness** (`99xio/xianix-executor-opencode`). Pick the harness per execution with [`executor-image`](#executor-image--harness-selection). Plugins are still installed from Claude Code marketplaces; the OpenCode image converts them and runs `opencode run`. See [Multi-Harness Development](/multi-harness-development/overview/) and [The Executor](/agent-development/executor/).
 
 In the **the-agent** reference implementation, the default file is `Knowledge/rules.json`, embedded at agent registration as Xians knowledge document **`Rules`**. The same document holds webhook, schedule, and chat rule sets side by side — each reader keeps only the entries whose discriminator key it recognises.
 
@@ -60,6 +65,7 @@ The top-level `rules.json` array can mix all three rule-set kinds. Each object i
         "use-inputs":       [ ... ],   // webhook only
         "use-plugins":      [ ... ],   // shared
         "with-envs":        [ ... ],   // shared
+        "executor-image":   "...",     // shared — Claude or OpenCode harness
         "model":            "...",     // shared (cost & execution controls)
         "max-turns":        40,        // shared
         "allowed-tools":    [ ... ],   // shared
@@ -111,9 +117,10 @@ The following fields are common to every execution block regardless of trigger t
 | `executions` | One or more execution blocks; optional per-block `name` for logs and skip messages. |
 | `platform` *(per execution, optional)* | Hosting service the run targets (`github`, `azuredevops`, …). Structural — describes *where* the run happens, independent of the plugin. See [`platform` & `repository`](#platform--repository--structural-execution-context). |
 | `repository` *(per execution, optional)* | Structural binding for the repository being operated on. Auto-resolved values are exposed to plugins as `{{repository-url}}` / `{{repository-name}}` / `{{git-ref}}`; **`{{repository-name}}` is derived from `url`, never authored**. Omit the whole block for executions that don't operate on a repo. See [`platform` & `repository`](#platform--repository--structural-execution-context). |
-| `use-plugins` *(per execution)* | Claude Code marketplace plugins to install before the prompt runs. See [`use-plugins`](#use-plugins--plugin-installation). |
+| `use-plugins` *(per execution)* | Claude Code marketplace plugins to install before the prompt runs (both harnesses). See [`use-plugins`](#use-plugins--plugin-installation). |
 | `with-envs` *(optional, per execution or per rule set)* | Container env vars injected before the prompt runs. Each entry **must** declare its source explicitly: `secrets.KEY`, `host.NAME`, or a literal with `"constant": true`. See [`with-envs`](#with-envs--container-environment-variables). |
-| `model` *(per execution, optional)* | Claude model this block runs on. Omit to use the executor default. See [Cost & Execution Controls](#cost--execution-controls). |
+| `executor-image` *(per execution, optional)* | Docker image for this execution's harness. Omit to use the host `EXECUTOR-IMAGE` (usually Claude Code). Set to `99xio/xianix-executor-opencode:latest` for OpenCode. See [`executor-image`](#executor-image--harness-selection). |
+| `model` *(per execution, optional)* | Model this block runs on. Claude harness uses Anthropic ids (e.g. `claude-sonnet-4-5`); OpenCode harness uses `provider/model` (e.g. `openai/gpt-6.1-sol`). Omit to use the executor default. See [Cost & Execution Controls](#cost--execution-controls). |
 | `max-turns` *(per execution, optional)* | Hard cap on agent turns. See [Cost & Execution Controls](#cost--execution-controls). |
 | `allowed-tools` *(per execution, optional)* | Tool names auto-approved without a permission prompt. See [Cost & Execution Controls](#cost--execution-controls). |
 | `disallowed-tools` *(per execution, optional)* | Tool names (or scoped patterns like `"Bash(rm *)"`) removed from the agent's context. See [Cost & Execution Controls](#cost--execution-controls). |
@@ -188,9 +195,33 @@ The structural fields use the **same skip-on-missing behaviour** as a `use-input
 
 ---
 
+## `executor-image` — Harness selection
+
+Optional per-execution Docker image. When set, the control plane starts that image instead of the host `EXECUTOR-IMAGE`. Omit or leave empty for the host default (typically `99xio/xianix-executor:latest`).
+
+| Image | Harness | Typical `model` form |
+|-------|---------|----------------------|
+| `99xio/xianix-executor:latest` | Claude Code SDK | `claude-sonnet-4-5`, `claude-haiku-4-5`, … |
+| `99xio/xianix-executor-opencode:latest` | OpenCode (`opencode run`) | `openai/gpt-6.1-sol`, `anthropic/claude-sonnet-5-5`, `google/gemini-3.1-pro-preview`, … |
+
+```json
+"executor-image": "99xio/xianix-executor-opencode:latest",
+"model": "openai/gpt-6.1-sol",
+"with-envs": [
+  { "name": "GITHUB-TOKEN", "value": "secrets.GITHUB-TOKEN", "mandatory": true },
+  { "name": "OPENAI-API-KEY", "value": "secrets.OPENAI-API-KEY", "mandatory": true }
+]
+```
+
+OpenCode still installs the same Claude marketplace plugins from `use-plugins`, converts commands/agents/skills into a `.opencode/` overlay, then runs the prompt with OpenCode. Inject the API key that matches the `provider/` prefix (`OPENAI-API-KEY`, `ANTHROPIC-API-KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, …). Confirm model ids with `opencode models` inside the image — inventing a slug the image does not list fails the run.
+
+The image must already be available on the Docker host (pull or build locally). Different executions in the same rule set can use different harnesses without restarting the agent. Details: [The Executor](/agent-development/executor/#opencode-harness).
+
+---
+
 ## `use-plugins` — Plugin Installation
 
-Declares Claude Code marketplace plugins to install in the executor container before the prompt runs.
+Declares Claude Code marketplace plugins to install in the executor container before the prompt runs. Both the Claude Code and OpenCode harnesses install from the same marketplace contract.
 
 ```json
 "use-plugins": [
@@ -230,7 +261,9 @@ The only variable seeded into every container from the agent host is:
 
 | Variable              | Description |
 |-----------------------|-------------|
-| `ANTHROPIC_API_KEY`   | Anthropic API key (read directly by the Claude Code SDK). Set via `ANTHROPIC-API-KEY` in the agent's `.env` — same value for every tenant. |
+| `ANTHROPIC_API_KEY`   | Anthropic API key (read by the Claude Code SDK / harness). Often set via `ANTHROPIC-API-KEY` in the agent's `.env`, or injected per execution with `with-envs`. |
+
+OpenCode executions that target non-Anthropic providers also need the matching key in `with-envs` (for example `OPENAI-API-KEY` or `GOOGLE_GENERATIVE_AI_API_KEY`).
 
 CM platform tokens (`GITHUB-TOKEN`, `AZURE-DEVOPS-TOKEN`, …) are **not** read from the agent host. Each tenant must store their own in the **Xians Secret Vault** and declare them in `rules.json` via `with-envs`:
 
@@ -383,20 +416,36 @@ Seven optional fields on every execution block let you tune cost, speed, and saf
 
 ### `model` — Model selection
 
-Route a block to a specific Claude model. Omit to use the executor's configured default (Sonnet-class).
+Route a block to a specific model. Omit to use the executor's configured default.
+
+**Claude Code harness** — Anthropic model ids:
 
 ```json
 "model": "claude-haiku-4-5"
 ```
 
-Use a cheaper model for mechanical tasks (requirement analysis, simple summaries) and the full Sonnet for deep reasoning (PR reviews, architecture decisions):
+Use a cheaper model for mechanical tasks and Sonnet/Opus for deep reasoning:
 
 ```json
 { "name": "github-issue-triage",        "model": "claude-haiku-4-5",   ... }
 { "name": "github-pull-request-review", "model": "claude-sonnet-4-5",  ... }
 ```
 
-> Regardless of the main model, Claude Code's internal background work (session titles, mini-summaries) is always routed to a Haiku-class model by the executor — you don't need to configure that separately.
+> Regardless of the main model, Claude Code's internal background work (session titles, mini-summaries) is always routed to a Haiku-class model by the Claude executor — you don't need to configure that separately.
+
+**OpenCode harness** — `provider/model` ids (must match an id from `opencode models` in the image):
+
+```json
+"executor-image": "99xio/xianix-executor-opencode:latest",
+"model": "openai/gpt-6.1-sol"
+```
+
+```json
+"model": "anthropic/claude-sonnet-5-5"
+"model": "google/gemini-3.1-pro-preview"
+```
+
+Pair each provider with the matching vault secret in `with-envs`.
 
 ### `max-turns` — Turn cap
 
@@ -478,7 +527,8 @@ Independent of the per-block fields above, the executor prepares a cached orient
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | string | *(executor default)* | Claude model name (e.g. `claude-haiku-4-5`, `claude-sonnet-4-5`). |
+| `model` | string | *(executor default)* | Model id for the active harness. Claude: `claude-haiku-4-5`, `claude-sonnet-4-5`, …. OpenCode: `provider/model` such as `openai/gpt-6.1-sol`. |
+| `executor-image` | string | *(host `EXECUTOR-IMAGE`)* | Docker image for this execution (e.g. `99xio/xianix-executor-opencode:latest`). |
 | `max-turns` | integer | *(none)* | Maximum agent turns before the run completes. |
 | `allowed-tools` | string array | `[]` | Tools to auto-approve (does not restrict). |
 | `disallowed-tools` | string array | `[]` | Tools to remove from the agent's context. Accepts bare names (`"WebSearch"`) or scoped patterns (`"Bash(rm *)"`). |
