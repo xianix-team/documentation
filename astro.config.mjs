@@ -125,6 +125,12 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Multi-Harness Development',
+					items: [
+						{ label: 'Overview', slug: 'multi-harness-development/overview' },
+					],
+				},
+				{
 					label: 'Agent Development',
 					items: [
 						{ label: 'Overview', slug: 'agent-development/overview' },

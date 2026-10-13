@@ -160,7 +160,8 @@ The **ContainerActivities** class manages the Docker lifecycle through the Docke
 
 2. **StartContainer** — creates and starts the executor container with:
    - The workspace volume mounted at `/workspace/repo`
-   - Environment variables: `TENANT_ID`, `EXECUTION_ID`, `XIANIX_INPUTS` (JSON), `CLAUDE_CODE_PLUGINS` (JSON), `PROMPT`, `ANTHROPIC_API_KEY`, platform tokens, and any per-plugin env vars from the rules
+   - The harness image from the host `EXECUTOR-IMAGE` or the execution's optional `executor-image` (Claude Code or OpenCode — see [The Executor](/agent-development/executor/))
+   - Environment variables: `TENANT_ID`, `EXECUTION_ID`, `XIANIX_INPUTS` (JSON), `CLAUDE_CODE_PLUGINS` (JSON), `PROMPT`, model/API keys, platform tokens, and any `with-envs` from the rules
    - Resource limits: memory cap, CPU limit, PID limit (256), no-new-privileges security option
 
 3. **WaitAndCollectOutput** — streams container logs and waits for exit (30-minute timeout). Parses the stdout JSON for cost, token usage, and session metadata.
@@ -174,8 +175,8 @@ When the container starts, its `entrypoint.sh` script runs through a determinist
 1. **Extract inputs** — reads `XIANIX_INPUTS` JSON to get the repository URL, platform type, and git ref (branch).
 2. **Configure git credentials** — sets up token-based authentication for GitHub or Azure DevOps using `git config url.insteadOf`.
 3. **Manage the repository** — fetches into the existing bare clone on the volume (or clones fresh on first run), then creates an isolated git worktree for the specific execution and branch.
-4. **Install Claude Code plugins** — the dynamic plugin installation step (see next section).
-5. **Execute the prompt** — hands off to `execute_plugin.py`, which invokes Claude Code via the SDK.
+4. **Install Claude Code plugins** — the dynamic plugin installation step (see next section). Both harnesses use the same marketplace install contract.
+5. **Execute the prompt** — Claude Code harness runs `execute_plugin.py` (Claude Agent SDK); OpenCode harness converts plugins and runs `opencode run`.
 6. **Clean up** — removes the worktree after execution.
 
 ### 5. Dynamic plugin installation
